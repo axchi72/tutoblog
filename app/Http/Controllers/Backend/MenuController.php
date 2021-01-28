@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Backend\ValidacionMenu;
+use App\Models\Backend\Menu;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -14,7 +16,8 @@ class MenuController extends Controller
      */
     public function index()
     {
-        return view('theme.back.menu.index');
+        $menus = Menu::getMenu();
+        return view('theme.back.menu.index', compact('menus'));
     }
 
     /**
@@ -22,9 +25,9 @@ class MenuController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function crear()
     {
-        //
+        return view('theme.back.menu.crear');
     }
 
     /**
@@ -33,20 +36,11 @@ class MenuController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function guardar(ValidacionMenu $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $validado = $request->validated();
+        Menu::create($validado);
+        return redirect()->route('menu')->with('mensaje', 'Menú guardado con exito');
     }
 
     /**
@@ -55,9 +49,10 @@ class MenuController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editar($id)
     {
-        //
+        $data = Menu::findOrFail($id);
+        return view('theme.back.menu.editar', compact('data'));
     }
 
     /**
@@ -67,9 +62,10 @@ class MenuController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function actualizar(ValidacionMenu $request, $id)
     {
-        //
+        Menu::findOrFail($id)->update($request->validated());
+        return redirect()->route('menu')->with('mensaje', 'Menú actualizado con exito');
     }
 
     /**
@@ -78,8 +74,9 @@ class MenuController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function eliminar($id)
     {
-        //
+        Menu::destroy($id);
+        return redirect()->route('menu')->with('mensaje', 'Menú eliminado con exito');
     }
 }
